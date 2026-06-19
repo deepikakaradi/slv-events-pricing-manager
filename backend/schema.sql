@@ -135,14 +135,14 @@ INSERT OR IGNORE INTO events (id, name, description, status) VALUES
 
 -- Insert default service catalog
 INSERT OR IGNORE INTO services (id, name, category, standard_price, description) VALUES
-(1, 'Premium Catering (Per Guest)', 'Catering', 45.0, 'Includes high-quality multicourse buffet options, beverages, and desserts'),
-(2, 'Standard Catering (Per Guest)', 'Catering', 25.0, 'Classic buffet service with essential food and soft drinks'),
-(3, 'Royal Stage Decoration', 'Decoration', 1500.0, 'Handcrafted floral stage arrangements, thematic backdrops, and mood lighting'),
-(4, 'Minimalist Decoration', 'Decoration', 500.0, 'Simple floral accents, clean styling, and seating arrangements'),
-(5, 'Premium Sound & DJ Set', 'Audio/Visual', 800.0, 'Top-tier sound systems, party lighting rig, and professional event DJ'),
-(6, 'Standard Sound System', 'Audio/Visual', 300.0, 'Microphones, standard speakers, and ambient music setup'),
-(7, 'HD Photography & Video', 'Photography', 1200.0, 'Full-day event coverage, edited high-resolution photos, and 5-min highlight video'),
-(8, 'Basic Photography', 'Photography', 500.0, '4-hour event photoshoot with digital photo delivery'),
-(9, 'Luxury Bridal/Groom Suite', 'Venue Support', 400.0, 'Air-conditioned green rooms with vanity mirrors, refreshments, and assistant'),
-(10, 'Live Musical Band', 'Entertainment', 2000.0, '4-piece live band performance for cocktail hours or main show'),
-(11, 'Event Coordinator Services', 'Management', 600.0, 'On-site supervisor to manage timelines, vendors, and guest support');
+(1, 'Premium Catering (Per Guest)', 'Catering', 3735.0, 'Includes high-quality multicourse buffet options, beverages, and desserts'),
+(2, 'Standard Catering (Per Guest)', 'Catering', 2075.0, 'Classic buffet service with essential food and soft drinks'),
+(3, 'Royal Stage Decoration', 'Decoration', 124500.0, 'Handcrafted floral stage arrangements, thematic backdrops, and mood lighting'),
+(4, 'Minimalist Decoration', 'Decoration', 41500.0, 'Simple floral accents, clean styling, and seating arrangements'),
+(5, 'Premium Sound & DJ Set', 'Audio/Visual', 66400.0, 'Top-tier sound systems, party lighting rig, and professional event DJ'),
+(6, 'Standard Sound System', 'Audio/Visual', 24900.0, 'Microphones, standard speakers, and ambient music setup'),
+(7, 'HD Photography & Video', 'Photography', 99600.0, 'Full-day event coverage, edited high-resolution photos, and 5-min highlight video'),
+(8, 'Basic Photography', 'Photography', 41500.0, '4-hour event photoshoot with digital photo delivery'),
+(9, 'Luxury Bridal/Groom Suite', 'Venue Support', 33200.0, 'Air-conditioned green rooms with vanity mirrors, refreshments, and assistant'),
+(10, 'Live Musical Band', 'Entertainment', 166000.0, '4-piece live band performance for cocktail hours or main show'),
+(11, 'Event Coordinator Services', 'Management', 49800.0, 'On-site supervisor to manage timelines, vendors, and guest support');

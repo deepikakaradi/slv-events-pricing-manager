@@ -277,17 +277,17 @@ async function initializeDatabase() {
     if (parseInt(serviceCheck.rows[0].count) === 0) {
       console.log('Seeding default service catalog...');
       const defaultServices = [
-        ['Premium Catering (Per Guest)', 'Catering', 45.0, 'Includes high-quality multicourse buffet options, beverages, and desserts'],
-        ['Standard Catering (Per Guest)', 'Catering', 25.0, 'Classic buffet service with essential food and soft drinks'],
-        ['Royal Stage Decoration', 'Decoration', 1500.0, 'Handcrafted floral stage arrangements, thematic backdrops, and mood lighting'],
-        ['Minimalist Decoration', 'Decoration', 500.0, 'Simple floral accents, clean styling, and seating arrangements'],
-        ['Premium Sound & DJ Set', 'Audio/Visual', 800.0, 'Top-tier sound systems, party lighting rig, and professional event DJ'],
-        ['Standard Sound System', 'Audio/Visual', 300.0, 'Microphones, standard speakers, and ambient music setup'],
-        ['HD Photography & Video', 'Photography', 1200.0, 'Full-day event coverage, edited high-resolution photos, and 5-min highlight video'],
-        ['Basic Photography', 'Photography', 500.0, '4-hour event photoshoot with digital photo delivery'],
-        ['Luxury Suite Room', 'Venue Support', 400.0, 'Air-conditioned room with vanity mirrors and refreshments'],
-        ['Live Musical Band', 'Entertainment', 2000.0, '4-piece live band performance for cocktail hours or main show'],
-        ['Event Coordinator Services', 'Management', 600.0, 'On-site supervisor to manage timelines, vendors, and guest support']
+        ['Premium Catering (Per Guest)', 'Catering', 3735.0, 'Includes high-quality multicourse buffet options, beverages, and desserts'],
+        ['Standard Catering (Per Guest)', 'Catering', 2075.0, 'Classic buffet service with essential food and soft drinks'],
+        ['Royal Stage Decoration', 'Decoration', 124500.0, 'Handcrafted floral stage arrangements, thematic backdrops, and mood lighting'],
+        ['Minimalist Decoration', 'Decoration', 41500.0, 'Simple floral accents, clean styling, and seating arrangements'],
+        ['Premium Sound & DJ Set', 'Audio/Visual', 66400.0, 'Top-tier sound systems, party lighting rig, and professional event DJ'],
+        ['Standard Sound System', 'Audio/Visual', 24900.0, 'Microphones, standard speakers, and ambient music setup'],
+        ['HD Photography & Video', 'Photography', 99600.0, 'Full-day event coverage, edited high-resolution photos, and 5-min highlight video'],
+        ['Basic Photography', 'Photography', 41500.0, '4-hour event photoshoot with digital photo delivery'],
+        ['Luxury Suite Room', 'Venue Support', 33200.0, 'Air-conditioned room with vanity mirrors and refreshments'],
+        ['Live Musical Band', 'Entertainment', 166000.0, '4-piece live band performance for cocktail hours or main show'],
+        ['Event Coordinator Services', 'Management', 49800.0, 'On-site supervisor to manage timelines, vendors, and guest support']
       ];
       for (const s of defaultServices) {
         await query('INSERT INTO services (name, category, standard_price, description) VALUES ($1, $2, $3, $4)', s);
@@ -304,9 +304,9 @@ async function initializeDatabase() {
       const birthday = eventsList.rows.find(e => e.name === 'Birthday');
 
       if (wedding) {
-        // Silver package: Wedding, Silver, base 5000
+        // Silver package: Wedding, Silver, base 415000
         const resSilver = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id', 
-          ['Wedding Silver Package', wedding.id, 'Silver', 5000.0]);
+          ['Wedding Silver Package', wedding.id, 'Silver', 415000.0]);
         const pSilverId = isPostgres ? resSilver.rows[0].id : resSilver.insertId;
         
         // Link services to Silver (Standard Catering, Minimalist Deco, Standard Sound, Basic Photo)
@@ -314,17 +314,17 @@ async function initializeDatabase() {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [pSilverId, sId]);
         }
 
-        // Gold package: Wedding, Gold, base 12000
+        // Gold package: Wedding, Gold, base 996000
         const resGold = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id', 
-          ['Wedding Gold Deluxe', wedding.id, 'Gold', 12000.0]);
+          ['Wedding Gold Deluxe', wedding.id, 'Gold', 996000.0]);
         const pGoldId = isPostgres ? resGold.rows[0].id : resGold.insertId;
         for (const sId of [1, 3, 5, 7, 11]) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [pGoldId, sId]);
         }
 
-        // Platinum package: Wedding, Platinum, base 22000
+        // Platinum package: Wedding, Platinum, base 1826000
         const resPlatinum = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id', 
-          ['Wedding Royal Platinum', wedding.id, 'Platinum', 22000.0]);
+          ['Wedding Royal Platinum', wedding.id, 'Platinum', 1826000.0]);
         const pPlatId = isPostgres ? resPlatinum.rows[0].id : resPlatinum.insertId;
         for (const sId of [1, 3, 5, 7, 9, 10, 11]) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [pPlatId, sId]);
@@ -342,17 +342,17 @@ async function initializeDatabase() {
       }
 
       if (birthday) {
-        // Silver Birthday: 1500 base
+        // Silver Birthday: 124500 base
         const resBdaySilver = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id',
-          ['Birthday Silver Bash', birthday.id, 'Silver', 1500.0]);
+          ['Birthday Silver Bash', birthday.id, 'Silver', 124500.0]);
         const bSilverId = isPostgres ? resBdaySilver.rows[0].id : resBdaySilver.insertId;
         for (const sId of [2, 4, 6]) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [bSilverId, sId]);
         }
 
-        // Gold Birthday: 3500 base
+        // Gold Birthday: 290500 base
         const resBdayGold = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id',
-          ['Birthday Golden Glow', birthday.id, 'Gold', 3500.0]);
+          ['Birthday Golden Glow', birthday.id, 'Gold', 290500.0]);
         const bGoldId = isPostgres ? resBdayGold.rows[0].id : resBdayGold.insertId;
         for (const sId of [1, 3, 6, 8]) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [bGoldId, sId]);

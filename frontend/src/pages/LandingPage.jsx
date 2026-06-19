@@ -222,7 +222,7 @@ export default function LandingPage() {
                       onChange={() => setCalcEvent('wedding')} 
                       className="accent-luxury-500"
                     />
-                    <span>Wedding (Premium Catering: $45/head)</span>
+                    <span>Wedding (Premium Catering: ₹45/head)</span>
                   </label>
                   <label className="flex items-center space-x-2 text-sm cursor-pointer">
                     <input 
@@ -232,7 +232,7 @@ export default function LandingPage() {
                       onChange={() => setCalcEvent('birthday')} 
                       className="accent-luxury-500"
                     />
-                    <span>Birthday (Standard Catering: $25/head)</span>
+                    <span>Birthday (Standard Catering: ₹25/head)</span>
                   </label>
                 </div>
               </div>
@@ -248,7 +248,7 @@ export default function LandingPage() {
             <div className="space-y-4 font-mono text-sm border-b border-slate-200/50 dark:border-slate-800/40 pb-6 mb-6">
               <div className="flex justify-between text-slate-400">
                 <span>Base Package Cost:</span>
-                <span>${calcBase.toLocaleString()}</span>
+                <span>₹{calcBase.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Guest Slab Multiplier:</span>
@@ -258,7 +258,7 @@ export default function LandingPage() {
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Estimated Catering:</span>
-                <span>${(calcGuests * (calcEvent === 'wedding' ? 45 : 25)).toLocaleString()}</span>
+                <span>₹{(calcGuests * (calcEvent === 'wedding' ? 45 : 25)).toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Luxury GST Tax (18%):</span>
@@ -270,7 +270,7 @@ export default function LandingPage() {
 
             <div className="flex justify-between items-baseline mb-8">
               <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Price:</span>
-              <span className="text-3xl font-extrabold gold-text">${getEstimate().toLocaleString()}</span>
+              <span className="text-3xl font-extrabold gold-text">₹{getEstimate().toLocaleString()}</span>
             </div>
 
             <button

@@ -95,7 +95,7 @@ export default function PricingEngine() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Standard Rate ($)</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Standard Rate (₹)</label>
                   <input
                     type="number"
                     placeholder="e.g. 500"

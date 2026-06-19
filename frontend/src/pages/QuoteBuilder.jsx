@@ -186,7 +186,7 @@ export default function QuoteBuilder() {
     doc.text(`Event Category: ${selectedEvent}`, 120, 63);
     doc.text(`Guest Count Slab: ${guestCount} guests`, 120, 69);
     doc.text(`Base package: ${calcResult.package.name}`, 120, 75);
-    doc.text(`Client Budget: ${clientBudget ? '$' + clientBudget : 'Not specified'}`, 120, 81);
+    doc.text(`Client Budget: ${clientBudget ? 'Rs. ' + clientBudget : 'Not specified'}`, 120, 81);
 
     // Items table
     const tableHeaders = [['Service Line Item Description', 'Quantity', 'Rate', 'Total Cost']];
@@ -197,8 +197,8 @@ export default function QuoteBuilder() {
       tableRows.push([
         item.name,
         item.quantity,
-        `$${item.custom_price.toLocaleString()}`,
-        `$${item.total.toLocaleString()}`
+        `Rs. ${item.custom_price.toLocaleString()}`,
+        `Rs. ${item.total.toLocaleString()}`
       ]);
     });
 
@@ -221,22 +221,22 @@ export default function QuoteBuilder() {
 
     doc.setFont('Helvetica', 'normal');
     doc.text('Subtotal:', 130, finalY);
-    doc.text(`$${calcResult.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+    doc.text(`Rs. ${calcResult.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
 
     if (calcResult.discount > 0) {
       finalY += 6;
       doc.text(`Discount (${calcResult.discount_percent}%):`, 130, finalY);
-      doc.text(`-$${calcResult.discount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+      doc.text(`-Rs. ${calcResult.discount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
     }
 
     finalY += 6;
     doc.text('Luxury Tax GST (18%):', 130, finalY);
-    doc.text(`$${calcResult.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+    doc.text(`Rs. ${calcResult.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
 
     finalY += 8;
     doc.setFont('Helvetica', 'bold');
     doc.text('GRAND TOTAL:', 130, finalY);
-    doc.text(`$${calcResult.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+    doc.text(`Rs. ${calcResult.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
 
     // AI recommendation summaries
     finalY += 15;
@@ -258,7 +258,7 @@ export default function QuoteBuilder() {
     doc.setFontSize(8.5);
     
     const pitch = calcResult.ai_recommendations?.upsell 
-      ? `Upsell Option: Upgrade to ${calcResult.ai_recommendations.upsell.target_name} (${calcResult.ai_recommendations.upsell.target_tier}) for an estimated $${calcResult.ai_recommendations.upsell.estimated_price.toLocaleString()}. ${calcResult.ai_recommendations.upsell.pitch}`
+      ? `Upsell Option: Upgrade to ${calcResult.ai_recommendations.upsell.target_name} (${calcResult.ai_recommendations.upsell.target_tier}) for an estimated Rs. ${calcResult.ai_recommendations.upsell.estimated_price.toLocaleString()}. ${calcResult.ai_recommendations.upsell.pitch}`
       : 'Currently at Platinum peak service layout level.';
     
     const splitPitch = doc.splitTextToSize(pitch, 160);
@@ -397,7 +397,7 @@ export default function QuoteBuilder() {
             </div>
 
             <div className="relative md:col-span-2">
-              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 pl-1">Client Overall Budget ($) (Optional)</label>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5 pl-1">Client Overall Budget (₹) (Optional)</label>
               <input
                 type="number"
                 placeholder="e.g. 15000"
@@ -459,7 +459,7 @@ export default function QuoteBuilder() {
                   
                   <div className="flex justify-between items-baseline mt-4 w-full font-mono">
                     <span className="text-[10px] text-slate-400">Base Price:</span>
-                    <span className="text-2xl font-extrabold text-slate-800 dark:text-white">${p.base_price.toLocaleString()}</span>
+                    <span className="text-2xl font-extrabold text-slate-800 dark:text-white">₹{p.base_price.toLocaleString()}</span>
                   </div>
                 </button>
               );
@@ -523,7 +523,7 @@ export default function QuoteBuilder() {
                       <Plus className={`h-4.5 w-4.5 flex-shrink-0 ${isChecked ? 'text-luxury-500' : 'text-slate-400'}`} />
                       <div className="leading-tight">
                         <div className="text-xs font-semibold text-slate-800 dark:text-white">{svc.name}</div>
-                        <span className="text-[10px] text-slate-400 font-mono">${svc.standard_price.toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">₹{svc.standard_price.toLocaleString()}</span>
                       </div>
                     </button>
                   );
@@ -549,7 +549,7 @@ export default function QuoteBuilder() {
 
                     <div className="grid grid-cols-2 gap-2 text-[10px]">
                       <div>
-                        <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider">Unit Price ($)</label>
+                        <label className="block text-slate-400 mb-1 font-bold uppercase tracking-wider">Unit Price (₹)</label>
                         <input
                           type="number"
                           value={addon.custom_price}
@@ -611,7 +611,7 @@ export default function QuoteBuilder() {
                 {calcResult.items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
                     <span>{item.name} (x{item.quantity})</span>
-                    <span>${item.total.toLocaleString()}</span>
+                    <span>₹{item.total.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
@@ -636,7 +636,7 @@ export default function QuoteBuilder() {
               <div className="space-y-4 font-mono text-sm border-t border-slate-200/50 dark:border-slate-800/40 pt-6">
                 <div className="flex justify-between text-slate-400">
                   <span>Gross Subtotal:</span>
-                  <span>${calcResult.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span>₹{calcResult.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
                 {calcResult.discount > 0 && (
                   <div className="flex justify-between text-rose-500">
@@ -646,11 +646,11 @@ export default function QuoteBuilder() {
                 )}
                 <div className="flex justify-between text-slate-400">
                   <span>Luxury Tax GST (18%):</span>
-                  <span>${calcResult.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span>₹{calcResult.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div className="flex justify-between items-baseline pt-4 border-t border-slate-100 dark:border-slate-900">
                   <span className="text-slate-400 font-sans text-xs uppercase font-bold tracking-wider">Final Customer Price:</span>
-                  <span className="text-3xl font-extrabold gold-text">${calcResult.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span className="text-3xl font-extrabold gold-text">₹{calcResult.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 </div>
               </div>
             </div>

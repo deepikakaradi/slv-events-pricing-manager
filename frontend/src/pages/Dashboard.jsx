@@ -137,7 +137,7 @@ export default function Dashboard() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Approved Revenue', value: `$${metrics.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: 'Realized business volume', icon: TrendingUp, color: 'text-luxury-500' },
+          { label: 'Approved Revenue', value: `₹${metrics.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: 'Realized business volume', icon: TrendingUp, color: 'text-luxury-500' },
           { label: 'Active Packages', value: metrics.activePackages, sub: 'Tier versions published', icon: Layers, color: 'text-indigo-500' },
           { label: 'Quotes Generated', value: metrics.totalQuotes, sub: 'Total pipeline entries', icon: FileText, color: 'text-emerald-500' },
           { label: 'Active Event Types', value: metrics.activeEvents, sub: 'Configured event slabs', icon: Calendar, color: 'text-amber-500' }
