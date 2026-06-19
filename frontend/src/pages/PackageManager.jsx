@@ -290,7 +290,7 @@ export default function PackageManager() {
                       {isChecked ? <CheckSquare className="h-4.5 w-4.5 flex-shrink-0" /> : <Square className="h-4.5 w-4.5 flex-shrink-0 text-slate-500" />}
                       <div className="leading-tight">
                         <div className="text-xs font-semibold">{svc.name}</div>
-                        <span className="text-[10px] text-slate-400 font-mono">₹{svc.standard_price.toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">{formatCurrency(svc.standard_price)}</span>
                       </div>
                     </button>
                   );
@@ -378,7 +378,7 @@ export default function PackageManager() {
                 {/* Base price & service counts */}
                 <div className="flex justify-between items-baseline font-mono text-sm">
                   <span className="text-slate-400 text-xs">Base price:</span>
-                  <span className="text-lg font-bold text-slate-800 dark:text-white">₹{pkg.base_price.toLocaleString()}</span>
+                  <span className="text-lg font-bold text-slate-800 dark:text-white">{formatCurrency(pkg.base_price)}</span>
                 </div>
 
                 {/* Services list snippet */}

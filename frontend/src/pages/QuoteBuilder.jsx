@@ -460,7 +460,7 @@ export default function QuoteBuilder() {
                   
                   <div className="flex justify-between items-baseline mt-4 w-full font-mono">
                     <span className="text-[10px] text-slate-400">Base Price:</span>
-                    <span className="text-2xl font-extrabold text-slate-800 dark:text-white">₹{p.base_price.toLocaleString()}</span>
+                    <span className="text-2xl font-extrabold text-slate-800 dark:text-white">{formatCurrency(p.base_price)}</span>
                   </div>
                 </button>
               );
@@ -524,7 +524,7 @@ export default function QuoteBuilder() {
                       <Plus className={`h-4.5 w-4.5 flex-shrink-0 ${isChecked ? 'text-luxury-500' : 'text-slate-400'}`} />
                       <div className="leading-tight">
                         <div className="text-xs font-semibold text-slate-800 dark:text-white">{svc.name}</div>
-                        <span className="text-[10px] text-slate-400 font-mono">₹{svc.standard_price.toLocaleString()}</span>
+                        <span className="text-[10px] text-slate-400 font-mono">{formatCurrency(svc.standard_price)}</span>
                       </div>
                     </button>
                   );
@@ -612,7 +612,7 @@ export default function QuoteBuilder() {
                 {calcResult.items.map((item, idx) => (
                   <div key={idx} className="flex justify-between text-xs font-mono text-slate-700 dark:text-slate-300">
                     <span>{item.name} (x{item.quantity})</span>
-                    <span>₹{item.total.toLocaleString()}</span>
+                    <span>{formatCurrency(item.total)}</span>
                   </div>
                 ))}
               </div>
@@ -637,21 +637,21 @@ export default function QuoteBuilder() {
               <div className="space-y-4 font-mono text-sm border-t border-slate-200/50 dark:border-slate-800/40 pt-6">
                 <div className="flex justify-between text-slate-400">
                   <span>Gross Subtotal:</span>
-                  <span>₹{calcResult.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span>{formatCurrency(calcResult.subtotal)}</span>
                 </div>
                 {calcResult.discount > 0 && (
                   <div className="flex justify-between text-rose-500">
                     <span>Discount Deduction:</span>
-                    <span>-${calcResult.discount.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                    <span>-{formatCurrency(calcResult.discount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-slate-400">
                   <span>Luxury Tax GST (18%):</span>
-                  <span>₹{calcResult.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span>{formatCurrency(calcResult.tax)}</span>
                 </div>
                 <div className="flex justify-between items-baseline pt-4 border-t border-slate-100 dark:border-slate-900">
                   <span className="text-slate-400 font-sans text-xs uppercase font-bold tracking-wider">Final Customer Price:</span>
-                  <span className="text-3xl font-extrabold gold-text">₹{calcResult.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span className="text-3xl font-extrabold gold-text">{formatCurrency(calcResult.final_price)}</span>
                 </div>
               </div>
             </div>
@@ -694,7 +694,7 @@ export default function QuoteBuilder() {
                   <div className="space-y-3">
                     <div className="leading-tight">
                       <div className="text-xs font-bold text-slate-800 dark:text-white">Upgrade to {calcResult.ai_recommendations.upsell.target_name}</div>
-                      <span className="text-[9px] uppercase tracking-wider font-bold text-luxury-500 font-mono">Estimated Price: ${calcResult.ai_recommendations.upsell.estimated_price.toLocaleString()}</span>
+                      <span className="text-[9px] uppercase tracking-wider font-bold text-luxury-500 font-mono">Estimated Price: ${formatCurrency(calcResult.ai_recommendations.upsell.estimated_price)}</span>
                     </div>
                     <p className="text-[10px] text-slate-400 leading-normal italic">
                       "{calcResult.ai_recommendations.upsell.pitch}"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import { Bell, Check, Clock, ShieldAlert } from 'lucide-react';
 
 export default function NotificationCenter() {

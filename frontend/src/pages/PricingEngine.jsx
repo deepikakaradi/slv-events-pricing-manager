@@ -152,7 +152,7 @@ export default function PricingEngine() {
                       </span>
                     </td>
                     <td className="font-mono text-sm font-semibold text-slate-800 dark:text-white">
-                      ${svc.standard_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                      {formatCurrency(svc.standard_price)}
                     </td>
                     <td>
                       <span className="text-slate-400 text-xs truncate max-w-[200px] block">{svc.description || '-'}</span>
