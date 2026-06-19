@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import { 
   User, 
   Mail, 
@@ -197,8 +198,8 @@ export default function QuoteBuilder() {
       tableRows.push([
         item.name,
         item.quantity,
-        `Rs. ${item.custom_price.toLocaleString()}`,
-        `Rs. ${item.total.toLocaleString()}`
+        formatCurrency(item.custom_price).replace('₹', 'Rs. '),
+        formatCurrency(item.total).replace('₹', 'Rs. ')
       ]);
     });
 
@@ -221,22 +222,22 @@ export default function QuoteBuilder() {
 
     doc.setFont('Helvetica', 'normal');
     doc.text('Subtotal:', 130, finalY);
-    doc.text(`Rs. ${calcResult.subtotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+    doc.text(formatCurrency(calcResult.subtotal).replace('₹', 'Rs. '), 175, finalY);
 
     if (calcResult.discount > 0) {
       finalY += 6;
       doc.text(`Discount (${calcResult.discount_percent}%):`, 130, finalY);
-      doc.text(`-Rs. ${calcResult.discount.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+      doc.text('-' + formatCurrency(calcResult.discount).replace('₹', 'Rs. '), 175, finalY);
     }
 
     finalY += 6;
     doc.text('Luxury Tax GST (18%):', 130, finalY);
-    doc.text(`Rs. ${calcResult.tax.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+    doc.text(formatCurrency(calcResult.tax).replace('₹', 'Rs. '), 175, finalY);
 
     finalY += 8;
     doc.setFont('Helvetica', 'bold');
     doc.text('GRAND TOTAL:', 130, finalY);
-    doc.text(`Rs. ${calcResult.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}`, 175, finalY);
+    doc.text(formatCurrency(calcResult.final_price).replace('₹', 'Rs. '), 175, finalY);
 
     // AI recommendation summaries
     finalY += 15;
@@ -258,7 +259,7 @@ export default function QuoteBuilder() {
     doc.setFontSize(8.5);
     
     const pitch = calcResult.ai_recommendations?.upsell 
-      ? `Upsell Option: Upgrade to ${calcResult.ai_recommendations.upsell.target_name} (${calcResult.ai_recommendations.upsell.target_tier}) for an estimated Rs. ${calcResult.ai_recommendations.upsell.estimated_price.toLocaleString()}. ${calcResult.ai_recommendations.upsell.pitch}`
+      ? `Upsell Option: Upgrade to ${calcResult.ai_recommendations.upsell.target_name} (${calcResult.ai_recommendations.upsell.target_tier}) for an estimated ${formatCurrency(calcResult.ai_recommendations.upsell.estimated_price).replace('₹', 'Rs. ')}. ${calcResult.ai_recommendations.upsell.pitch}`
       : 'Currently at Platinum peak service layout level.';
     
     const splitPitch = doc.splitTextToSize(pitch, 160);
@@ -305,7 +306,7 @@ export default function QuoteBuilder() {
 
       {/* Step 1: Client specifications */}
       {step === 1 && (
-        <div className="glass-card p-8 rounded-2xl border border-white/20 dark:border-slate-800/40 space-y-6">
+        <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-2xl p-8 rounded-2xl border border-white/20 dark:border-slate-800/40 space-y-6">
           <h3 className="font-outfit font-bold text-lg border-b border-slate-200/50 dark:border-slate-800/40 pb-4">Client & Event Specifications</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -532,7 +533,7 @@ export default function QuoteBuilder() {
             </div>
 
             {/* Selected items overrides */}
-            <div className="glass-card p-6 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4">
+            <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-2xl p-6 rounded-2xl border border-slate-200 dark:border-slate-800/40 space-y-4">
               <h4 className="font-outfit font-bold text-sm">Active Custom Overrides</h4>
               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-1">
                 {selectedAddons.map(addon => (
@@ -658,7 +659,7 @@ export default function QuoteBuilder() {
             {/* AI Recommendations & Margin safety controls */}
             <div className="space-y-6">
               {/* Margin checks */}
-              <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
+              <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-2xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
                 <h4 className="font-outfit font-bold text-sm flex items-center space-x-2">
                   <TrendingUp className="h-4.5 w-4.5 text-luxury-500" />
                   <span>Margin Compliance check</span>
@@ -683,7 +684,7 @@ export default function QuoteBuilder() {
               </div>
 
               {/* AI recommend cards */}
-              <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
+              <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-2xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
                 <h4 className="font-outfit font-bold text-sm flex items-center space-x-2 text-luxury-500">
                   <Sparkles className="h-4.5 w-4.5" />
                   <span>Upselling Opportunity</span>

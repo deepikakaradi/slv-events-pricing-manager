@@ -235,7 +235,7 @@ async function getUpsellOpportunity(currentPkg, guestCount, clientBudget) {
 function generateAISummary({ eventName, tier, guestCount, finalPrice, discountPercent, isMarginValid, profitMargin, upsellOpportunity }) {
   let summary = `This quotation represents a tailored ${tier} package layout for a ${eventName} hosting ${guestCount} guests. `;
   
-  summary += `At a final price of $${finalPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} (inclusive of 18% tax)`;
+  summary += `At a final price of ₹${finalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (inclusive of 18% tax)`;
   
   if (discountPercent > 0) {
     summary += ` and including a preferred ${discountPercent}% discount, `;
@@ -252,7 +252,7 @@ function generateAISummary({ eventName, tier, guestCount, finalPrice, discountPe
   }
 
   if (upsellOpportunity) {
-    summary += `Upselling Recommendation: Recommend upgrading to the ${upsellOpportunity.target_tier} tier (${upsellOpportunity.target_name}) for an estimated $${upsellOpportunity.estimated_price.toLocaleString()} to include luxury catering and entertainment features.`;
+    summary += `Upselling Recommendation: Recommend upgrading to the ${upsellOpportunity.target_tier} tier (${upsellOpportunity.target_name}) for an estimated ₹${upsellOpportunity.estimated_price.toLocaleString('en-IN', { maximumFractionDigits: 0 })} to include luxury catering and entertainment features.`;
   }
 
   return summary;

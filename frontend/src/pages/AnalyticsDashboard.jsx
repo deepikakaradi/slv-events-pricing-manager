@@ -46,7 +46,7 @@ export default function AnalyticsDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Package Popularity */}
-        <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm">
+        <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm">
           <h3 className="font-outfit font-bold text-base mb-6">Package Popularity Breakdown</h3>
           <div className="h-72">
             {charts.packagePopularity.length > 0 ? (
@@ -72,7 +72,7 @@ export default function AnalyticsDashboard() {
         </div>
 
         {/* Event distribution */}
-        <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm">
+        <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm">
           <h3 className="font-outfit font-bold text-base mb-6">Event Categories Share</h3>
           <div className="h-72 flex items-center">
             {charts.eventDistribution.length > 0 ? (

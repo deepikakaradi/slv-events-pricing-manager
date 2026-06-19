@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import { Sliders, Plus, DollarSign, Tag, Info, AlertTriangle } from 'lucide-react';
 
 export default function PricingEngine() {
@@ -63,7 +64,7 @@ export default function PricingEngine() {
         {/* Left column: Catalog Services Table */}
         <div className="lg:col-span-2 space-y-6">
           {showAddSvc && (
-            <form onSubmit={handleAddService} className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 space-y-4 shadow-md">
+            <form onSubmit={handleAddService} className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 space-y-4 shadow-md">
               <h3 className="font-outfit font-bold text-base">New Catalog Service</h3>
               
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -125,7 +126,7 @@ export default function PricingEngine() {
             </form>
           )}
 
-          <div className="glass-card rounded-2xl border border-white/20 dark:border-slate-800/40 overflow-hidden shadow-sm">
+          <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl rounded-2xl border border-white/20 dark:border-slate-800/40 overflow-hidden shadow-sm">
             <div className="p-5 border-b border-slate-200/50 dark:border-slate-800/40 bg-white/30 dark:bg-slate-900/30">
               <h3 className="font-outfit font-bold text-base">Standard Catalog Services</h3>
             </div>
@@ -166,7 +167,7 @@ export default function PricingEngine() {
         {/* Right column: Dynamic Slabs & Margin Info panel */}
         <div className="space-y-6">
           {/* Rules info */}
-          <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
+          <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-luxury-500">
               <Sliders className="h-5 w-5" />
               <h3 className="font-outfit font-bold text-base">Guest Slab Multipliers</h3>
@@ -199,7 +200,7 @@ export default function PricingEngine() {
           </div>
 
           {/* Margin validation info */}
-          <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
+          <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm space-y-4">
             <div className="flex items-center space-x-2 text-rose-500">
               <AlertTriangle className="h-5 w-5" />
               <h3 className="font-outfit font-bold text-base">Margin Validation rule</h3>

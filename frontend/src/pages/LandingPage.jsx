@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import { 
   Sparkles, 
   Layers, 
@@ -248,7 +249,7 @@ export default function LandingPage() {
             <div className="space-y-4 font-mono text-sm border-b border-slate-200/50 dark:border-slate-800/40 pb-6 mb-6">
               <div className="flex justify-between text-slate-400">
                 <span>Base Package Cost:</span>
-                <span>₹{calcBase.toLocaleString()}</span>
+                <span>{formatCurrency(calcBase)}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Guest Slab Multiplier:</span>
@@ -258,19 +259,17 @@ export default function LandingPage() {
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Estimated Catering:</span>
-                <span>₹{(calcGuests * (calcEvent === 'wedding' ? 45 : 25)).toLocaleString()}</span>
+                <span>{formatCurrency(calcGuests * (calcEvent === 'wedding' ? 45 : 25))}</span>
               </div>
               <div className="flex justify-between text-slate-400">
                 <span>Luxury GST Tax (18%):</span>
-                <span>
-                  ${Math.round(((calcBase * (calcGuests < 75 ? 0.8 : calcGuests <= 150 ? 1.0 : calcGuests <= 300 ? 1.4 : 2.0)) + (calcGuests * (calcEvent === 'wedding' ? 45 : 25))) * 0.18).toLocaleString()}
-                </span>
+                <span>{formatCurrency(Math.round(((calcBase * (calcGuests < 75 ? 0.8 : calcGuests <= 150 ? 1.0 : calcGuests <= 300 ? 1.4 : 2.0)) + (calcGuests * (calcEvent === 'wedding' ? 45 : 25))) * 0.18))}</span>
               </div>
             </div>
 
             <div className="flex justify-between items-baseline mb-8">
               <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Price:</span>
-              <span className="text-3xl font-extrabold gold-text">₹{getEstimate().toLocaleString()}</span>
+              <span className="text-3xl font-extrabold gold-text">{formatCurrency(getEstimate())}</span>
             </div>
 
             <button

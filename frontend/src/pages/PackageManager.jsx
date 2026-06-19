@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import { 
   Plus, 
   Trash2, 
@@ -196,7 +197,7 @@ export default function PackageManager() {
       </div>
 
       {showForm && (
-        <div className="glass-card p-8 rounded-2xl border border-white/20 dark:border-slate-800/40 relative shadow-xl">
+        <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-8 rounded-2xl border border-white/20 dark:border-slate-800/40 relative shadow-xl">
           <button onClick={resetForm} className="absolute top-4 right-4 p-1 text-slate-400 hover:text-slate-100 transition-colors">
             <X className="h-5 w-5" />
           </button>
@@ -346,7 +347,7 @@ export default function PackageManager() {
         {packages.map((pkg) => {
           const isPublished = pkg.is_published === 1;
           return (
-            <div key={pkg.id} className="glass-card rounded-2xl border border-white/20 dark:border-slate-800/40 overflow-hidden shadow-sm flex flex-col justify-between">
+            <div key={pkg.id} className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl rounded-2xl border border-white/20 dark:border-slate-800/40 overflow-hidden shadow-sm flex flex-col justify-between">
               {/* Header color tier */}
               <div className={`h-1.5 w-full bg-gradient-to-r ${
                 pkg.tier === 'Platinum' ? 'from-luxury-400 via-luxury-500 to-luxury-600' :

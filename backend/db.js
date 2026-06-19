@@ -255,7 +255,7 @@ async function initializeDatabase() {
       console.log('Default users seeded: admin@slvevents.com/admin123 & sales@slvevents.com/sales123');
     }
 
-    // 2. Seed Events if empty
+        // 2. Seed Events if empty
     const eventCheck = await query('SELECT count(*) as count FROM events');
     if (parseInt(eventCheck.rows[0].count) === 0) {
       console.log('Seeding default events...');
@@ -263,9 +263,7 @@ async function initializeDatabase() {
         ['Wedding', 'Elegant wedding ceremony and grand reception package services'],
         ['Birthday', 'Vibrant decorations, catering, and audio-visual setups for birthdays'],
         ['Corporate', 'Professional business seminars, conferences, and formal corporate functions'],
-        ['Engagement', 'Sophisticated family gatherings and ring ceremony celebrations'],
-        ['Reception', 'Splendid post-wedding dining and entertainment evenings'],
-        ['Custom Event', 'Tailored event management with custom selected services']
+        ['Anniversary', 'Sophisticated anniversary celebration packages']
       ];
       for (const e of defaultEvents) {
         await query('INSERT INTO events (name, description) VALUES ($1, $2)', e);
@@ -277,17 +275,19 @@ async function initializeDatabase() {
     if (parseInt(serviceCheck.rows[0].count) === 0) {
       console.log('Seeding default service catalog...');
       const defaultServices = [
-        ['Premium Catering (Per Guest)', 'Catering', 3735.0, 'Includes high-quality multicourse buffet options, beverages, and desserts'],
-        ['Standard Catering (Per Guest)', 'Catering', 2075.0, 'Classic buffet service with essential food and soft drinks'],
-        ['Royal Stage Decoration', 'Decoration', 124500.0, 'Handcrafted floral stage arrangements, thematic backdrops, and mood lighting'],
-        ['Minimalist Decoration', 'Decoration', 41500.0, 'Simple floral accents, clean styling, and seating arrangements'],
-        ['Premium Sound & DJ Set', 'Audio/Visual', 66400.0, 'Top-tier sound systems, party lighting rig, and professional event DJ'],
-        ['Standard Sound System', 'Audio/Visual', 24900.0, 'Microphones, standard speakers, and ambient music setup'],
-        ['HD Photography & Video', 'Photography', 99600.0, 'Full-day event coverage, edited high-resolution photos, and 5-min highlight video'],
-        ['Basic Photography', 'Photography', 41500.0, '4-hour event photoshoot with digital photo delivery'],
-        ['Luxury Suite Room', 'Venue Support', 33200.0, 'Air-conditioned room with vanity mirrors and refreshments'],
-        ['Live Musical Band', 'Entertainment', 166000.0, '4-piece live band performance for cocktail hours or main show'],
-        ['Event Coordinator Services', 'Management', 49800.0, 'On-site supervisor to manage timelines, vendors, and guest support']
+        ['Wedding Catering (Per Guest)', 'Catering', 45.0, 'Premium multicourse buffet options'],
+        ['Birthday Catering (Per Guest)', 'Catering', 25.0, 'Classic buffet service with essential food'],
+        ['Corporate Catering (Per Guest)', 'Catering', 35.0, 'Professional catering for business events'],
+        ['Anniversary Catering (Per Guest)', 'Catering', 30.0, 'Elegant catering for anniversaries'],
+        ['Royal Stage Decoration', 'Decoration', 15000.0, 'Handcrafted floral stage arrangements'],
+        ['Minimalist Decoration', 'Decoration', 5000.0, 'Simple floral accents and clean styling'],
+        ['Premium Sound & DJ Set', 'Audio/Visual', 8000.0, 'Top-tier sound systems and DJ'],
+        ['Standard Sound System', 'Audio/Visual', 3000.0, 'Microphones and ambient music setup'],
+        ['HD Photography & Video', 'Photography', 12000.0, 'Full-day event coverage'],
+        ['Basic Photography', 'Photography', 5000.0, '4-hour event photoshoot'],
+        ['Luxury Suite Room', 'Venue Support', 4000.0, 'Air-conditioned room with vanity mirrors'],
+        ['Live Musical Band', 'Entertainment', 20000.0, '4-piece live band performance'],
+        ['Event Coordinator Services', 'Management', 6000.0, 'On-site supervisor to manage timelines']
       ];
       for (const s of defaultServices) {
         await query('INSERT INTO services (name, category, standard_price, description) VALUES ($1, $2, $3, $4)', s);
@@ -298,64 +298,53 @@ async function initializeDatabase() {
     const packageCheck = await query('SELECT count(*) as count FROM packages');
     if (parseInt(packageCheck.rows[0].count) === 0) {
       console.log('Seeding initial packages and guest count pricing rules...');
-      // Get Wedding and Birthday event IDs
       const eventsList = await query('SELECT id, name FROM events');
-      const wedding = eventsList.rows.find(e => e.name === 'Wedding');
-      const birthday = eventsList.rows.find(e => e.name === 'Birthday');
+      const servicesList = await query('SELECT id, name FROM services');
+      
+      const getSvcId = (name) => servicesList.rows.find(s => s.name === name)?.id;
 
-      if (wedding) {
-        // Silver package: Wedding, Silver, base 415000
+      for (const evt of eventsList.rows) {
+        // Find matching catering for the event
+        const cateringName = `${evt.name} Catering (Per Guest)`;
+        const cateringId = getSvcId(cateringName);
+
+        // Silver Package (8000)
         const resSilver = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id', 
-          ['Wedding Silver Package', wedding.id, 'Silver', 415000.0]);
-        const pSilverId = isPostgres ? resSilver.rows[0].id : resSilver.insertId;
+          [`${evt.name} Silver Package`, evt.id, 'Silver', 8000.0]);
+        const pSilverId = resSilver.insertId || resSilver.rows?.[0]?.id;
         
-        // Link services to Silver (Standard Catering, Minimalist Deco, Standard Sound, Basic Photo)
-        for (const sId of [2, 4, 6, 8]) {
+        const silverServices = [cateringId, getSvcId('Minimalist Decoration'), getSvcId('Standard Sound System')].filter(Boolean);
+        for (const sId of silverServices) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [pSilverId, sId]);
         }
 
-        // Gold package: Wedding, Gold, base 996000
+        // Gold Package (12000)
         const resGold = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id', 
-          ['Wedding Gold Deluxe', wedding.id, 'Gold', 996000.0]);
-        const pGoldId = isPostgres ? resGold.rows[0].id : resGold.insertId;
-        for (const sId of [1, 3, 5, 7, 11]) {
+          [`${evt.name} Gold Package`, evt.id, 'Gold', 12000.0]);
+        const pGoldId = resGold.insertId || resGold.rows?.[0]?.id;
+        
+        const goldServices = [cateringId, getSvcId('Royal Stage Decoration'), getSvcId('Premium Sound & DJ Set'), getSvcId('Basic Photography')].filter(Boolean);
+        for (const sId of goldServices) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [pGoldId, sId]);
         }
 
-        // Platinum package: Wedding, Platinum, base 1826000
+        // Platinum Package (20000)
         const resPlatinum = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id', 
-          ['Wedding Royal Platinum', wedding.id, 'Platinum', 1826000.0]);
-        const pPlatId = isPostgres ? resPlatinum.rows[0].id : resPlatinum.insertId;
-        for (const sId of [1, 3, 5, 7, 9, 10, 11]) {
+          [`${evt.name} Platinum Package`, evt.id, 'Platinum', 20000.0]);
+        const pPlatId = resPlatinum.insertId || resPlatinum.rows?.[0]?.id;
+        
+        const platServices = [cateringId, getSvcId('Royal Stage Decoration'), getSvcId('Premium Sound & DJ Set'), getSvcId('HD Photography & Video'), getSvcId('Event Coordinator Services')].filter(Boolean);
+        for (const sId of platServices) {
           await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [pPlatId, sId]);
         }
 
-        // Pricing rules for Wedding packages
-        // Guest slabs: 50 Guests (multiplier 0.8), 100 Guests (1.0), 200 Guests (1.3), 500 Guests (1.8)
+        // Pricing Rules
         const pkgs = [pSilverId, pGoldId, pPlatId];
         for (const pkgId of pkgs) {
-          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 0, 75, 0.8, $2)', [pkgId, 'Small Gathering (<75 guests)']);
-          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 76, 150, 1.0, $2)', [pkgId, 'Standard Size (76-150 guests)']);
-          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 151, 300, 1.4, $2)', [pkgId, 'Large Gathering (151-300 guests)']);
-          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 301, 9999, 2.0, $2)', [pkgId, 'Grand Gala (300+ guests)']);
-        }
-      }
-
-      if (birthday) {
-        // Silver Birthday: 124500 base
-        const resBdaySilver = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id',
-          ['Birthday Silver Bash', birthday.id, 'Silver', 124500.0]);
-        const bSilverId = isPostgres ? resBdaySilver.rows[0].id : resBdaySilver.insertId;
-        for (const sId of [2, 4, 6]) {
-          await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [bSilverId, sId]);
-        }
-
-        // Gold Birthday: 290500 base
-        const resBdayGold = await query('INSERT INTO packages (name, event_id, tier, base_price) VALUES ($1, $2, $3, $4) RETURNING id',
-          ['Birthday Golden Glow', birthday.id, 'Gold', 290500.0]);
-        const bGoldId = isPostgres ? resBdayGold.rows[0].id : resBdayGold.insertId;
-        for (const sId of [1, 3, 6, 8]) {
-          await query('INSERT INTO package_services (package_id, service_id) VALUES ($1, $2)', [bGoldId, sId]);
+          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 20, 99, 0.8, $2)', [pkgId, 'Small (20-99 guests)']);
+          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 100, 299, 1.0, $2)', [pkgId, 'Standard (100-299 guests)']);
+          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 300, 599, 1.4, $2)', [pkgId, 'Large (300-599 guests)']);
+          await query('INSERT INTO pricing_rules (package_id, guest_min, guest_max, price_multiplier, description) VALUES ($1, 600, 9999, 2.0, $2)', [pkgId, 'Grand (600+ guests)']);
         }
       }
     }

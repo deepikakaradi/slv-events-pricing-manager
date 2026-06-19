@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
+import { formatCurrency } from '../utils/formatters';
 import { 
   TrendingUp, 
   Calendar, 
@@ -137,14 +138,14 @@ export default function Dashboard() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Approved Revenue', value: `₹${metrics.revenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, sub: 'Realized business volume', icon: TrendingUp, color: 'text-luxury-500' },
+          { label: 'Approved Revenue', value: `₹${formatCurrency(metrics.revenue)}`, sub: 'Realized business volume', icon: TrendingUp, color: 'text-luxury-500' },
           { label: 'Active Packages', value: metrics.activePackages, sub: 'Tier versions published', icon: Layers, color: 'text-indigo-500' },
           { label: 'Quotes Generated', value: metrics.totalQuotes, sub: 'Total pipeline entries', icon: FileText, color: 'text-emerald-500' },
           { label: 'Active Event Types', value: metrics.activeEvents, sub: 'Configured event slabs', icon: Calendar, color: 'text-amber-500' }
         ].map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={idx} className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 relative overflow-hidden shadow-sm">
+            <div key={idx} className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 relative overflow-hidden shadow-sm">
               <div className="absolute top-0 right-0 w-24 h-24 bg-luxury-400/5 rounded-bl-[100px] pointer-events-none" />
               <div className="flex justify-between items-center mb-4">
                 <span className="text-xs uppercase font-bold text-slate-400 tracking-wider">{kpi.label}</span>
@@ -198,7 +199,7 @@ export default function Dashboard() {
         </div>
 
         {/* Package Popularity (Bar Chart) */}
-        <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm flex flex-col justify-between">
+        <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm flex flex-col justify-between">
           <h3 className="font-outfit font-bold text-base mb-6">Package Popularity</h3>
           <div className="h-60 w-full flex items-center">
             {charts.packagePopularity.length > 0 ? (
@@ -263,7 +264,7 @@ export default function Dashboard() {
                         <span className="text-[9px] uppercase tracking-wider font-bold text-luxury-500">{q.package_tier}</span>
                       </td>
                       <td className="font-mono text-sm font-bold text-slate-800 dark:text-white">
-                        ${q.final_price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        ${formatCurrency(q.final_price)}
                       </td>
                       <td>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${
@@ -309,7 +310,7 @@ export default function Dashboard() {
         </div>
 
         {/* Activity Logs */}
-        <div className="glass-card p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm flex flex-col justify-between">
+        <div className="backdrop-blur-xl bg-white/40 dark:bg-slate-900/40 shadow-xl p-6 rounded-2xl border border-white/20 dark:border-slate-800/40 shadow-sm flex flex-col justify-between">
           <div>
             <h3 className="font-outfit font-bold text-base mb-6">Activity Timeline</h3>
             <div className="space-y-4 max-h-[320px] overflow-y-auto pr-1">
