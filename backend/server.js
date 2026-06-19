@@ -598,8 +598,8 @@ app.get('/api/v1/analytics/dashboard', authenticateToken, async (req, res) => {
     const quotesCountRes = await db.query('SELECT COUNT(*) as count FROM quotes');
     
     // Revenue is sum of final_price for approved quotes
-    const approvedRevenueRes = await db.query('SELECT SUM(final_price) as sum FROM quotes WHERE status = $2', [null, 'Approved']);
-    const pendingRevenueRes = await db.query('SELECT SUM(final_price) as sum FROM quotes WHERE status = $2', [null, 'Pending']);
+    const approvedRevenueRes = await db.query('SELECT SUM(final_price) as sum FROM quotes WHERE status = $1', ['Approved']);
+    const pendingRevenueRes = await db.query('SELECT SUM(final_price) as sum FROM quotes WHERE status = $1', ['Pending']);
     
     const approvedRevenue = parseFloat(approvedRevenueRes.rows[0].sum) || 0;
     const pendingRevenue = parseFloat(pendingRevenueRes.rows[0].sum) || 0;
