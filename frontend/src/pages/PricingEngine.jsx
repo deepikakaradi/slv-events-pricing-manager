@@ -177,20 +177,20 @@ export default function PricingEngine() {
             </p>
             <div className="space-y-2 border-t border-slate-200/50 dark:border-slate-800/40 pt-4 font-mono text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-400">&lt; 75 Guests:</span>
-                <span className="font-bold text-emerald-500">0.8x (Discounts)</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">76 - 150 Guests:</span>
+                <span className="text-slate-400">&lt;= 100 Guests:</span>
                 <span className="font-bold text-slate-300">1.0x (Standard)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">151 - 300 Guests:</span>
-                <span className="font-bold text-luxury-500">1.4x (Large Crowd)</span>
+                <span className="text-slate-400">101 - 250 Guests:</span>
+                <span className="font-bold text-emerald-500">1.25x (Mid-Size Slab)</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">300+ Guests:</span>
-                <span className="font-bold text-luxury-400">2.0x (Grand Gala)</span>
+                <span className="text-slate-400">251 - 500 Guests:</span>
+                <span className="font-bold text-luxury-500">1.50x (Large Slab)</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">501+ Guests:</span>
+                <span className="font-bold text-rose-500">Custom Quote (Required)</span>
               </div>
             </div>
             <div className="p-3 bg-slate-100/50 dark:bg-slate-900/60 rounded-xl flex items-start space-x-2 text-[10px] text-slate-400">

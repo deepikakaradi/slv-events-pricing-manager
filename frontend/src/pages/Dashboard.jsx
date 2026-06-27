@@ -264,7 +264,7 @@ export default function Dashboard() {
                         <span className="text-[9px] uppercase tracking-wider font-bold text-luxury-500">{q.package_tier}</span>
                       </td>
                       <td className="font-mono text-sm font-bold text-slate-800 dark:text-white">
-                        ${formatCurrency(q.final_price)}
+                        {formatCurrency(q.final_price)}
                       </td>
                       <td>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${

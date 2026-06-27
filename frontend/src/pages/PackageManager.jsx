@@ -30,10 +30,10 @@ export default function PackageManager() {
   
   // Pricing Rules Slabs
   const [rules, setRules] = useState([
-    { guest_min: 0, guest_max: 75, price_multiplier: 0.8, description: 'Small Gathering (<75 guests)' },
-    { guest_min: 76, guest_max: 150, price_multiplier: 1.0, description: 'Standard Size (76-150 guests)' },
-    { guest_min: 151, guest_max: 300, price_multiplier: 1.4, description: 'Large Gathering (151-300 guests)' },
-    { guest_min: 301, guest_max: 9999, price_multiplier: 2.0, description: 'Grand Gala (300+ guests)' }
+    { guest_min: 0, guest_max: 100, price_multiplier: 1.0, description: 'Base Slab (<=100 guests)' },
+    { guest_min: 101, guest_max: 250, price_multiplier: 1.25, description: 'Mid-Size Slab (101-250 guests)' },
+    { guest_min: 251, guest_max: 500, price_multiplier: 1.50, description: 'Large Slab (251-500 guests)' },
+    { guest_min: 501, guest_max: 99999, price_multiplier: 0.0, description: 'Custom Quote Slab (>500 guests)' }
   ]);
 
   const [loading, setLoading] = useState(false);
@@ -128,10 +128,10 @@ export default function PackageManager() {
     setBasePrice('');
     setSelectedServices([]);
     setRules([
-      { guest_min: 0, guest_max: 75, price_multiplier: 0.8, description: 'Small Gathering (<75 guests)' },
-      { guest_min: 76, guest_max: 150, price_multiplier: 1.0, description: 'Standard Size (76-150 guests)' },
-      { guest_min: 151, guest_max: 300, price_multiplier: 1.4, description: 'Large Gathering (151-300 guests)' },
-      { guest_min: 301, guest_max: 9999, price_multiplier: 2.0, description: 'Grand Gala (300+ guests)' }
+      { guest_min: 0, guest_max: 100, price_multiplier: 1.0, description: 'Base Slab (<=100 guests)' },
+      { guest_min: 101, guest_max: 250, price_multiplier: 1.25, description: 'Mid-Size Slab (101-250 guests)' },
+      { guest_min: 251, guest_max: 500, price_multiplier: 1.50, description: 'Large Slab (251-500 guests)' },
+      { guest_min: 501, guest_max: 99999, price_multiplier: 0.0, description: 'Custom Quote Slab (>500 guests)' }
     ]);
     setEditMode(false);
     setTargetId(null);

@@ -506,7 +506,7 @@ app.post('/api/v1/quotes', authenticateToken, async (req, res) => {
     await logActivity(req.user.id, `Created quotation ID ${quoteId} for client ${clientName}`);
     
     // Notify admin of a new pending quote
-    await createNotification(null, `New pending quotation generated for ${clientName} (Total: $${finalPrice.toFixed(2)})`);
+    await createNotification(null, `New pending quotation generated for ${clientName} (Total: ₹${finalPrice.toLocaleString('en-IN')})`);
 
     res.status(201).json({ id: quoteId, message: 'Quotation created successfully' });
   } catch (err) {

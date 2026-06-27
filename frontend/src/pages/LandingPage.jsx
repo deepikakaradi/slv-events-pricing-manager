@@ -9,26 +9,58 @@ import {
   ArrowRight,
   Calculator,
   ChevronRight,
-  Check
+  Check,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function LandingPage() {
   const { setPage, theme, toggleTheme } = useApp();
   const [calcGuests, setCalcGuests] = useState(100);
-  const [calcEvent, setCalcEvent] = useState('wedding');
-  const [calcBase, setCalcBase] = useState(12000);
+  const [calcEvent, setCalcEvent] = useState('wedding'); // 'wedding', 'birthday', 'corporate'
+  const [calcTier, setCalcTier] = useState('gold'); // 'silver', 'gold', 'platinum'
 
-  // Quick estimator formula: Base * guest_multiplier + (catering_cost * guests)
+  const getCateringCost = () => {
+    if (calcEvent === 'wedding') return 1500;
+    if (calcEvent === 'birthday') return 800;
+    return 1200; // corporate
+  };
+
+  const getBasePrice = () => {
+    if (calcEvent === 'wedding') {
+      if (calcTier === 'silver') return 350000;
+      if (calcTier === 'gold') return 800000;
+      return 2000000;
+    }
+    if (calcEvent === 'birthday') {
+      if (calcTier === 'silver') return 50000;
+      if (calcTier === 'gold') return 120000;
+      return 250000;
+    }
+    if (calcTier === 'silver') return 150000;
+    if (calcTier === 'gold') return 400000;
+    return 1000000;
+  };
+
+  const getMultiplier = () => {
+    if (calcGuests <= 100) return 1.0;
+    if (calcGuests <= 250) return 1.25;
+    if (calcGuests <= 500) return 1.50;
+    return 0; // Custom Quote Required
+  };
+
   const getEstimate = () => {
-    let multiplier = 1.0;
-    if (calcGuests < 75) multiplier = 0.8;
-    else if (calcGuests <= 150) multiplier = 1.0;
-    else if (calcGuests <= 300) multiplier = 1.4;
-    else multiplier = 2.0;
+    const basePrice = getBasePrice();
+    const multiplier = getMultiplier();
+    if (multiplier === 0) return 0; // Custom Quote Required
 
-    const cateringCost = calcEvent === 'wedding' ? 45 : 25;
-    const subtotal = (calcBase * multiplier) + (cateringCost * calcGuests);
-    return Math.round(subtotal * 1.18); // inclusive of GST
+    const cateringCost = getCateringCost();
+    const adjustedBase = basePrice * multiplier;
+    const cateringTotal = cateringCost * calcGuests;
+    const subtotal = adjustedBase + cateringTotal;
+
+    const packageTax = adjustedBase * 0.18;
+    const cateringTax = cateringTotal * 0.05;
+    return Math.round(subtotal + packageTax + cateringTax);
   };
 
   return (
@@ -161,7 +193,7 @@ export default function LandingPage() {
               <span className="gold-text">See rates instantly.</span>
             </h2>
             <p className="text-slate-400 text-sm mb-8 leading-relaxed">
-              Slide guest counts and choose packages to watch the pricing rule slabs in action. Standard pricing rules apply multiplier weights: 0.8x for small parties, 1.0x standard, 1.4x for large crowds, and 2.0x for grand galas.
+              Slide guest counts and choose packages to watch the pricing rule slabs in action. Standard pricing rules apply multiplier weights: 1.0x standard, 1.25x for mid-size events (101-250), 1.50x for large events (251-500), and custom quotes above 500.
             </p>
 
             <div className="space-y-6">
@@ -170,15 +202,15 @@ export default function LandingPage() {
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Base Package tier</label>
                 <div className="grid grid-cols-3 gap-3">
                   {[
-                    { name: 'Silver (Basic)', base: 5000 },
-                    { name: 'Gold (Standard)', base: 12000 },
-                    { name: 'Platinum (Premium)', base: 22000 }
+                    { name: 'Silver (Basic)', id: 'silver' },
+                    { name: 'Gold (Standard)', id: 'gold' },
+                    { name: 'Platinum (Premium)', id: 'platinum' }
                   ].map((p) => (
                     <button
-                      key={p.name}
-                      onClick={() => setCalcBase(p.base)}
+                      key={p.id}
+                      onClick={() => setCalcTier(p.id)}
                       className={`py-3 px-4 rounded-xl text-xs font-bold border transition-all ${
-                        calcBase === p.base
+                        calcTier === p.id
                           ? 'border-luxury-500 bg-luxury-500/10 text-luxury-500 dark:text-luxury-400'
                           : 'border-slate-200/50 dark:border-slate-800/40 hover:bg-slate-200/25 dark:hover:bg-slate-900/30'
                       }`}
@@ -204,17 +236,17 @@ export default function LandingPage() {
                   className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-luxury-500"
                 />
                 <div className="flex justify-between text-[10px] text-slate-500 mt-2 font-mono">
-                  <span>20 (Small - 0.8x)</span>
-                  <span>150 (Std - 1.0x)</span>
-                  <span>300 (Large - 1.4x)</span>
-                  <span>600 (Grand - 2.0x)</span>
+                  <span>50-100 (Base)</span>
+                  <span>101-250 (+25%)</span>
+                  <span>251-500 (+50%)</span>
+                  <span>501+ (Custom)</span>
                 </div>
               </div>
 
               {/* Event Category */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Event category</label>
-                <div className="flex space-x-4">
+                <div className="flex flex-wrap gap-4">
                   <label className="flex items-center space-x-2 text-sm cursor-pointer">
                     <input 
                       type="radio" 
@@ -223,7 +255,7 @@ export default function LandingPage() {
                       onChange={() => setCalcEvent('wedding')} 
                       className="accent-luxury-500"
                     />
-                    <span>Wedding (Premium Catering: ₹45/head)</span>
+                    <span>Wedding (Catering: ₹1,500/head)</span>
                   </label>
                   <label className="flex items-center space-x-2 text-sm cursor-pointer">
                     <input 
@@ -233,7 +265,17 @@ export default function LandingPage() {
                       onChange={() => setCalcEvent('birthday')} 
                       className="accent-luxury-500"
                     />
-                    <span>Birthday (Standard Catering: ₹25/head)</span>
+                    <span>Birthday (Catering: ₹800/head)</span>
+                  </label>
+                  <label className="flex items-center space-x-2 text-sm cursor-pointer">
+                    <input 
+                      type="radio" 
+                      name="calcEvent" 
+                      checked={calcEvent === 'corporate'} 
+                      onChange={() => setCalcEvent('corporate')} 
+                      className="accent-luxury-500"
+                    />
+                    <span>Corporate (Catering: ₹1,200/head)</span>
                   </label>
                 </div>
               </div>
@@ -246,31 +288,42 @@ export default function LandingPage() {
               <Calculator className="h-4 w-4 text-luxury-500" />
             </div>
             <h3 className="font-outfit text-xl font-bold mb-4">Estimated Quote</h3>
-            <div className="space-y-4 font-mono text-sm border-b border-slate-200/50 dark:border-slate-800/40 pb-6 mb-6">
-              <div className="flex justify-between text-slate-400">
-                <span>Base Package Cost:</span>
-                <span>{formatCurrency(calcBase)}</span>
+            
+            {getMultiplier() === 0 ? (
+              <div className="py-8 text-center space-y-4">
+                <AlertTriangle className="h-10 w-10 text-amber-500 mx-auto animate-pulse" />
+                <h4 className="font-outfit font-bold text-base text-slate-800 dark:text-white">Custom Quote Required</h4>
+                <p className="text-xs text-slate-400">
+                  Estimates for events with more than 500 guests must be structured manually due to logistics and security guidelines.
+                </p>
               </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Guest Slab Multiplier:</span>
-                <span>
-                  {calcGuests < 75 ? '0.8x' : calcGuests <= 150 ? '1.0x' : calcGuests <= 300 ? '1.4x' : '2.0x'}
-                </span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Estimated Catering:</span>
-                <span>{formatCurrency(calcGuests * (calcEvent === 'wedding' ? 45 : 25))}</span>
-              </div>
-              <div className="flex justify-between text-slate-400">
-                <span>Luxury GST Tax (18%):</span>
-                <span>{formatCurrency(Math.round(((calcBase * (calcGuests < 75 ? 0.8 : calcGuests <= 150 ? 1.0 : calcGuests <= 300 ? 1.4 : 2.0)) + (calcGuests * (calcEvent === 'wedding' ? 45 : 25))) * 0.18))}</span>
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="space-y-4 font-mono text-sm border-b border-slate-200/50 dark:border-slate-800/40 pb-6 mb-6">
+                  <div className="flex justify-between text-slate-400">
+                    <span>Base Package Cost:</span>
+                    <span>{formatCurrency(getBasePrice())}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Guest Slab Multiplier:</span>
+                    <span>{getMultiplier()}x</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Estimated Catering:</span>
+                    <span>{formatCurrency(calcGuests * getCateringCost())}</span>
+                  </div>
+                  <div className="flex justify-between text-slate-400">
+                    <span>Luxury GST Tax:</span>
+                    <span>{formatCurrency(Math.round((getBasePrice() * getMultiplier() * 0.18) + (calcGuests * getCateringCost() * 0.05)))}</span>
+                  </div>
+                </div>
 
-            <div className="flex justify-between items-baseline mb-8">
-              <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Price:</span>
-              <span className="text-3xl font-extrabold gold-text">{formatCurrency(getEstimate())}</span>
-            </div>
+                <div className="flex justify-between items-baseline mb-8">
+                  <span className="text-sm font-semibold uppercase tracking-wider text-slate-400">Total Price:</span>
+                  <span className="text-3xl font-extrabold gold-text">{formatCurrency(getEstimate())}</span>
+                </div>
+              </>
+            )}
 
             <button
               onClick={() => setPage('register')}

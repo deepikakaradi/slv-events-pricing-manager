@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS services (
   name TEXT NOT NULL,
   category TEXT NOT NULL,
   standard_price REAL NOT NULL,
+  gst_rate REAL DEFAULT 18.0,
   description TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -134,15 +135,27 @@ INSERT OR IGNORE INTO events (id, name, description, status) VALUES
 (6, 'Custom Event', 'Tailored event management with custom selected services', 'active');
 
 -- Insert default service catalog
-INSERT OR IGNORE INTO services (id, name, category, standard_price, description) VALUES
-(1, 'Premium Catering (Per Guest)', 'Catering', 3735.0, 'Includes high-quality multicourse buffet options, beverages, and desserts'),
-(2, 'Standard Catering (Per Guest)', 'Catering', 2075.0, 'Classic buffet service with essential food and soft drinks'),
-(3, 'Royal Stage Decoration', 'Decoration', 124500.0, 'Handcrafted floral stage arrangements, thematic backdrops, and mood lighting'),
-(4, 'Minimalist Decoration', 'Decoration', 41500.0, 'Simple floral accents, clean styling, and seating arrangements'),
-(5, 'Premium Sound & DJ Set', 'Audio/Visual', 66400.0, 'Top-tier sound systems, party lighting rig, and professional event DJ'),
-(6, 'Standard Sound System', 'Audio/Visual', 24900.0, 'Microphones, standard speakers, and ambient music setup'),
-(7, 'HD Photography & Video', 'Photography', 99600.0, 'Full-day event coverage, edited high-resolution photos, and 5-min highlight video'),
-(8, 'Basic Photography', 'Photography', 41500.0, '4-hour event photoshoot with digital photo delivery'),
-(9, 'Luxury Bridal/Groom Suite', 'Venue Support', 33200.0, 'Air-conditioned green rooms with vanity mirrors, refreshments, and assistant'),
-(10, 'Live Musical Band', 'Entertainment', 166000.0, '4-piece live band performance for cocktail hours or main show'),
-(11, 'Event Coordinator Services', 'Management', 49800.0, 'On-site supervisor to manage timelines, vendors, and guest support');
+INSERT OR IGNORE INTO services (id, name, category, standard_price, gst_rate, description) VALUES
+(1, 'Wedding Catering (Per Guest)', 'Catering', 1500.0, 5.0, 'Premium multicourse buffet options'),
+(2, 'Birthday Catering (Per Guest)', 'Catering', 800.0, 5.0, 'Classic buffet service with essential food'),
+(3, 'Corporate Catering (Per Guest)', 'Catering', 1200.0, 5.0, 'Professional catering for business events'),
+(4, 'Anniversary Catering (Per Guest)', 'Catering', 1000.0, 5.0, 'Elegant catering for anniversaries'),
+(5, 'Royal Stage Decoration', 'Decoration', 150000.0, 12.0, 'Handcrafted floral stage arrangements'),
+(6, 'Minimalist Decoration', 'Decoration', 30000.0, 12.0, 'Simple floral accents and clean styling'),
+(7, 'Premium Sound & DJ Set', 'Audio/Visual', 45000.0, 18.0, 'Top-tier sound systems and professional DJ'),
+(8, 'Standard Sound System', 'Audio/Visual', 10000.0, 18.0, 'Microphones and ambient music setup'),
+(9, 'HD Photography & Video', 'Photography', 100000.0, 18.0, 'Full-day event coverage and highlight video'),
+(10, 'Basic Photography', 'Photography', 35000.0, 18.0, '4-hour event photoshoot'),
+(11, 'Luxury Suite Room', 'Venue Support', 15000.0, 12.0, 'Air-conditioned room with vanity mirrors'),
+(12, 'Live Musical Band', 'Entertainment', 120000.0, 18.0, '4-piece live band performance'),
+(13, 'Event Coordinator Services', 'Management', 25000.0, 18.0, 'On-site supervisor to manage timelines'),
+(14, 'Professional Anchor/Host', 'Entertainment', 20000.0, 18.0, 'Dynamic event host/anchor'),
+(15, 'Bridal/Groom Makeup', 'Venue Support', 25000.0, 12.0, 'Premium makeup and styling'),
+(16, 'Custom Invitation Cards', 'Management', 10000.0, 18.0, 'Custom invitation cards design and printing'),
+(17, 'Venue Lighting Setup', 'Audio/Visual', 35000.0, 18.0, 'Thematic event lighting arrangements'),
+(18, 'Thematic Flower Decoration', 'Decoration', 75000.0, 12.0, 'Exotic floral setup and entryways'),
+(19, 'Security Staff (Per Person)', 'Venue Support', 1800.0, 12.0, 'Security staff members per day'),
+(20, 'Housekeeping Staff (Per Person)', 'Venue Support', 1200.0, 12.0, 'Housekeeping staff members per day'),
+(21, 'Event Transportation', 'Venue Support', 25000.0, 12.0, 'Passenger transport and logistics coordination'),
+(22, 'Generator Power Backup', 'Venue Support', 15000.0, 12.0, 'Uninterrupted power supply support'),
+(23, 'Premium Event Venue Charges', 'Venue Support', 300000.0, 12.0, 'Premium venue booking and charges');

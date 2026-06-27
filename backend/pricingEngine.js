@@ -24,6 +24,38 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
   }
   const pkg = packageRes.rows[0];
 
+  // Check for guest count above 500 -> Custom Quote
+  if (guestCount > 500) {
+    return {
+      package: {
+        id: pkg.id,
+        name: pkg.name,
+        tier: pkg.tier,
+        base_price: pkg.base_price,
+        adjusted_base_price: 0,
+        multiplier: 0,
+        rule_description: 'Above 500 Guests (Custom Quote Required)'
+      },
+      guest_count: guestCount,
+      items: [],
+      subtotal: 0,
+      discount: 0,
+      discount_percent: discountPercent,
+      tax: 0,
+      final_price: 0,
+      cost_basis: 0,
+      profit_margin: 0,
+      is_margin_valid: true,
+      custom_quote_required: true,
+      advance_payment: 0,
+      remaining_balance: 0,
+      ai_recommendations: {
+        upsell: null,
+        summary: `This event has ${guestCount} guests (above 500 limit). Standard pricing packages do not apply. A custom quotation must be created manually by the Admin or Sales Manager.`
+      }
+    };
+  }
+
   // 2. Fetch standard services included in the package
   const bundledServicesRes = await db.query(
     `SELECT s.* FROM services s
@@ -55,12 +87,31 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
   let fixedServicesCost = 0;
   const items = [];
 
+  // GST rates by category: Catering -> 5%, Decoration/Venue Support -> 12%, Others -> 18%
+  // Package itself gets 18% (Event Management Services)
+  const pkgGstRate = 18.0;
+  let totalGst = 0;
+
+  // Package base price discount & GST calculation
+  const pkgDiscounted = adjustedBasePrice * (1 - parseFloat(discountPercent) / 100);
+  const pkgGst = pkgDiscounted * (pkgGstRate / 100);
+  totalGst += pkgGst;
+
   // Calculate costs of standard bundled services
   for (const service of bundledServices) {
-    if (service.name.toLowerCase().includes('catering') || service.name.toLowerCase().includes('per guest')) {
-      // Per guest service cost
+    const isCatering = service.name.toLowerCase().includes('catering') || service.name.toLowerCase().includes('per guest');
+    const serviceGstRate = service.gst_rate || (service.category === 'Catering' ? 5.0 : (service.category === 'Decoration' || service.category === 'Venue Support' ? 12.0 : 18.0));
+    
+    if (isCatering) {
+      // Per guest service cost (Catering scales with guestCount)
       const itemCost = service.standard_price * guestCount;
       baseCateringCost += itemCost;
+      
+      // Calculate specific item GST
+      const itemDiscounted = itemCost * (1 - parseFloat(discountPercent) / 100);
+      const itemGst = itemDiscounted * (serviceGstRate / 100);
+      totalGst += itemGst;
+
       items.push({
         service_id: service.id,
         name: service.name,
@@ -68,10 +119,11 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
         custom_price: service.standard_price,
         quantity: guestCount,
         category: service.category,
-        total: itemCost
+        total: itemCost,
+        gst_rate: serviceGstRate
       });
     } else {
-      // Fixed service cost
+      // Fixed bundled service cost is covered under package base price (so we display total as 0 / "Included")
       fixedServicesCost += service.standard_price;
       items.push({
         service_id: service.id,
@@ -80,7 +132,8 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
         custom_price: service.standard_price,
         quantity: 1,
         category: service.category,
-        total: service.standard_price
+        total: 0, // Bundled inside package base price
+        gst_rate: 0 // Tax is calculated on the package base price
       });
     }
   }
@@ -88,11 +141,11 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
   // Calculate additional (custom) services costs
   let additionalServicesCost = 0;
   for (const addSvc of additionalServices) {
-    // Fetch full service details
     const svcRes = await db.query('SELECT * FROM services WHERE id = $1', [addSvc.id]);
     if (svcRes.rows.length > 0) {
       const service = svcRes.rows[0];
       const customPrice = addSvc.custom_price !== undefined ? parseFloat(addSvc.custom_price) : service.standard_price;
+      const serviceGstRate = service.gst_rate || (service.category === 'Catering' ? 5.0 : (service.category === 'Decoration' || service.category === 'Venue Support' ? 12.0 : 18.0));
       
       let qty = parseInt(addSvc.quantity) || 1;
       if (service.name.toLowerCase().includes('catering') || service.name.toLowerCase().includes('per guest')) {
@@ -102,6 +155,11 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
       const totalItemPrice = customPrice * qty;
       additionalServicesCost += totalItemPrice;
       
+      // Calculate specific item GST
+      const itemDiscounted = totalItemPrice * (1 - parseFloat(discountPercent) / 100);
+      const itemGst = itemDiscounted * (serviceGstRate / 100);
+      totalGst += itemGst;
+
       items.push({
         service_id: service.id,
         name: `${service.name} (Add-on)`,
@@ -109,31 +167,32 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
         custom_price: customPrice,
         quantity: qty,
         category: service.category,
-        total: totalItemPrice
+        total: totalItemPrice,
+        gst_rate: serviceGstRate
       });
     }
   }
 
   // 5. Total Calculations
-  // Total package structure: adjusted base price + catering + fixed services + add-ons
   const subtotal = adjustedBasePrice + baseCateringCost + additionalServicesCost;
-  
   const discountAmount = subtotal * (parseFloat(discountPercent) / 100);
   const discountedSubtotal = subtotal - discountAmount;
   
-  // Apply 18% GST (Luxury event management tax)
-  const taxRate = 0.18;
-  const tax = discountedSubtotal * taxRate;
+  // Total calculated GST
+  const tax = totalGst;
   const finalPrice = discountedSubtotal + tax;
 
+  // Booking Advance (30%) and Remaining Due
+  const advancePayment = Math.round(finalPrice * 0.30);
+  const remainingBalance = finalPrice - advancePayment;
+
   // Margin Check Validation (Margin = (Charged - Cost) / Charged)
-  // For safety, assume cost basis is 70% of standard catalog price for base package and 80% for catering/addons
   const estimatedCostBasis = (pkg.base_price * 0.7) + (baseCateringCost * 0.75) + (additionalServicesCost * 0.75);
   const profitMargin = discountedSubtotal > 0 
     ? ((discountedSubtotal - estimatedCostBasis) / discountedSubtotal) * 100 
     : 0;
 
-  const isMarginValid = profitMargin >= 15; // Require minimum 15% margin for business profitability
+  const isMarginValid = profitMargin >= 15;
 
   // 6. AI Recommendations & Upselling Opportunities
   const upsellOpportunity = await getUpsellOpportunity(pkg, guestCount, budget);
@@ -165,6 +224,8 @@ async function calculateQuote({ packageId, guestCount, additionalServices = [], 
     discount_percent: discountPercent,
     tax,
     final_price: finalPrice,
+    advance_payment: advancePayment,
+    remaining_balance: remainingBalance,
     cost_basis: estimatedCostBasis,
     profit_margin: parseFloat(profitMargin.toFixed(2)),
     is_margin_valid: isMarginValid,
@@ -235,7 +296,7 @@ async function getUpsellOpportunity(currentPkg, guestCount, clientBudget) {
 function generateAISummary({ eventName, tier, guestCount, finalPrice, discountPercent, isMarginValid, profitMargin, upsellOpportunity }) {
   let summary = `This quotation represents a tailored ${tier} package layout for a ${eventName} hosting ${guestCount} guests. `;
   
-  summary += `At a final price of ₹${finalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (inclusive of 18% tax)`;
+  summary += `At a final price of ₹${finalPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 })} (inclusive of GST tax)`;
   
   if (discountPercent > 0) {
     summary += ` and including a preferred ${discountPercent}% discount, `;
