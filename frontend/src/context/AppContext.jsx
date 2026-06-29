@@ -16,7 +16,7 @@ export const AppProvider = ({ children }) => {
   const [packages, setPackages] = useState([]);
 
   // Base API url (assume proxy or same host local port)
-  const API_URL = 'http://localhost:5000/api/v1';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
   // Manage theme classes
   useEffect(() => {
