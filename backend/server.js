@@ -100,7 +100,7 @@ app.post('/api/v1/auth/register', async (req, res) => {
     const userId = isPostgres ? insertRes.rows[0].id : insertRes.insertId;
 
     const token = jwt.sign({ id: userId, name, email, role }, JWT_SECRET, { expiresIn: '24h' });
-    
+
     await logActivity(userId, `Registered user account for ${name} (${role})`);
 
     res.status(201).json({
@@ -433,7 +433,7 @@ app.post('/api/v1/packages/:id/clone', authenticateToken, requireAdmin, async (r
 
 app.post('/api/v1/quotes/calculate', authenticateToken, async (req, res) => {
   const { packageId, guestCount, additionalServices, discountPercent, budget } = req.body;
-  
+
   if (!packageId || !guestCount) {
     return res.status(400).json({ error: 'packageId and guestCount are required' });
   }
@@ -454,10 +454,10 @@ app.post('/api/v1/quotes/calculate', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/v1/quotes', authenticateToken, async (req, res) => {
-  const { 
+  const {
     clientName, clientEmail, clientPhone, clientCompany,
     eventId, packageId, guestCount, subtotal, discount, tax, finalPrice,
-    additionalServices = [], summary 
+    additionalServices = [], summary
   } = req.body;
 
   if (!clientName || !clientEmail || !eventId || !packageId || !guestCount || finalPrice === undefined) {
@@ -466,7 +466,7 @@ app.post('/api/v1/quotes', authenticateToken, async (req, res) => {
 
   try {
     const isPostgres = db.getDbType() === 'postgres';
-    
+
     // 1. Create client or find existing
     let clientId;
     const clientCheck = await db.query('SELECT id FROM clients WHERE email = $1', [clientEmail]);
@@ -504,7 +504,7 @@ app.post('/api/v1/quotes', authenticateToken, async (req, res) => {
     }
 
     await logActivity(req.user.id, `Created quotation ID ${quoteId} for client ${clientName}`);
-    
+
     // Notify admin of a new pending quote
     await createNotification(null, `New pending quotation generated for ${clientName} (Total: ₹${finalPrice.toLocaleString('en-IN')})`);
 
@@ -572,7 +572,7 @@ app.put('/api/v1/quotes/:id/status', authenticateToken, async (req, res) => {
   try {
     await db.query('UPDATE quotes SET status = $1 WHERE id = $2', [status, req.params.id]);
     await logActivity(req.user.id, `Updated quotation status for ID ${req.params.id} to ${status}`);
-    
+
     // Generate notification for quotation creator
     const quoteCreator = await db.query('SELECT created_by, client_id FROM quotes WHERE id = $1', [req.params.id]);
     if (quoteCreator.rows.length > 0) {
@@ -596,11 +596,11 @@ app.get('/api/v1/analytics/dashboard', authenticateToken, async (req, res) => {
     const totalEventsRes = await db.query('SELECT COUNT(*) as count FROM events WHERE status = $1', ['active']);
     const totalPackagesRes = await db.query('SELECT COUNT(*) as count FROM packages WHERE is_published = 1');
     const quotesCountRes = await db.query('SELECT COUNT(*) as count FROM quotes');
-    
+
     // Revenue is sum of final_price for approved quotes
     const approvedRevenueRes = await db.query('SELECT SUM(final_price) as sum FROM quotes WHERE status = $1', ['Approved']);
     const pendingRevenueRes = await db.query('SELECT SUM(final_price) as sum FROM quotes WHERE status = $1', ['Pending']);
-    
+
     const approvedRevenue = parseFloat(approvedRevenueRes.rows[0].sum) || 0;
     const pendingRevenue = parseFloat(pendingRevenueRes.rows[0].sum) || 0;
 
