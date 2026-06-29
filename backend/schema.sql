@@ -3,7 +3,7 @@
 
 -- Table: users
 CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS users (
 
 -- Table: events
 CREATE TABLE IF NOT EXISTS events (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   description TEXT,
   status TEXT DEFAULT 'active' CHECK(status IN ('active', 'inactive')),
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS events (
 
 -- Table: services
 CREATE TABLE IF NOT EXISTS services (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   category TEXT NOT NULL,
   standard_price REAL NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS services (
 
 -- Table: packages
 CREATE TABLE IF NOT EXISTS packages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   event_id INTEGER NOT NULL,
   tier TEXT NOT NULL CHECK(tier IN ('Silver', 'Gold', 'Platinum')),
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS package_services (
 
 -- Table: pricing_rules
 CREATE TABLE IF NOT EXISTS pricing_rules (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   package_id INTEGER NOT NULL,
   guest_min INTEGER NOT NULL,
   guest_max INTEGER NOT NULL,
@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS pricing_rules (
 
 -- Table: clients
 CREATE TABLE IF NOT EXISTS clients (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   phone TEXT,
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS clients (
 
 -- Table: quotes
 CREATE TABLE IF NOT EXISTS quotes (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   client_id INTEGER NOT NULL,
   event_id INTEGER NOT NULL,
   package_id INTEGER NOT NULL,
@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS quotes (
 
 -- Table: quote_items
 CREATE TABLE IF NOT EXISTS quote_items (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   quote_id INTEGER NOT NULL,
   service_id INTEGER,
   name TEXT NOT NULL,
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS quote_items (
 
 -- Table: notifications
 CREATE TABLE IF NOT EXISTS notifications (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   user_id INTEGER,
   message TEXT NOT NULL,
   is_read INTEGER DEFAULT 0, -- 0 = false, 1 = true
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS notifications (
 
 -- Table: activity_logs
 CREATE TABLE IF NOT EXISTS activity_logs (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   user_id INTEGER,
   action TEXT NOT NULL,
   timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -126,16 +126,17 @@ CREATE TABLE IF NOT EXISTS activity_logs (
 );
 
 -- Insert default event types
-INSERT OR IGNORE INTO events (id, name, description, status) VALUES
+INSERT INTO events (id, name, description, status) VALUES
 (1, 'Wedding', 'Elegant wedding ceremony and grand reception package services', 'active'),
 (2, 'Birthday', 'Vibrant decorations, catering, and audio-visual setups for birthdays', 'active'),
 (3, 'Corporate', 'Professional business seminars, conferences, and formal corporate functions', 'active'),
 (4, 'Engagement', 'Sophisticated family gatherings and ring ceremony celebrations', 'active'),
 (5, 'Reception', 'Splendid post-wedding dining and entertainment evenings', 'active'),
-(6, 'Custom Event', 'Tailored event management with custom selected services', 'active');
+(6, 'Custom Event', 'Tailored event management with custom selected services', 'active')
+ON CONFLICT (id) DO NOTHING;
 
 -- Insert default service catalog
-INSERT OR IGNORE INTO services (id, name, category, standard_price, gst_rate, description) VALUES
+INSERT INTO services (id, name, category, standard_price, gst_rate, description) VALUES
 (1, 'Wedding Catering (Per Guest)', 'Catering', 1500.0, 5.0, 'Premium multicourse buffet options'),
 (2, 'Birthday Catering (Per Guest)', 'Catering', 800.0, 5.0, 'Classic buffet service with essential food'),
 (3, 'Corporate Catering (Per Guest)', 'Catering', 1200.0, 5.0, 'Professional catering for business events'),
@@ -158,4 +159,9 @@ INSERT OR IGNORE INTO services (id, name, category, standard_price, gst_rate, de
 (20, 'Housekeeping Staff (Per Person)', 'Venue Support', 1200.0, 12.0, 'Housekeeping staff members per day'),
 (21, 'Event Transportation', 'Venue Support', 25000.0, 12.0, 'Passenger transport and logistics coordination'),
 (22, 'Generator Power Backup', 'Venue Support', 15000.0, 12.0, 'Uninterrupted power supply support'),
-(23, 'Premium Event Venue Charges', 'Venue Support', 300000.0, 12.0, 'Premium venue booking and charges');
+(23, 'Premium Event Venue Charges', 'Venue Support', 300000.0, 12.0, 'Premium venue booking and charges')
+ON CONFLICT (id) DO NOTHING;
+
+-- Reset serial sequences in PostgreSQL
+SELECT setval(pg_get_serial_sequence('events', 'id'), COALESCE(max(id), 1));
+SELECT setval(pg_get_serial_sequence('services', 'id'), COALESCE(max(id), 1));
