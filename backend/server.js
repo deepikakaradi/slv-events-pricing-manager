@@ -605,26 +605,27 @@ app.get('/api/v1/analytics/dashboard', authenticateToken, async (req, res) => {
     const pendingRevenue = parseFloat(pendingRevenueRes.rows[0].sum) || 0;
 
     // 2. Revenue Trends (Grouped by Month)
-    const revenueTrendsRes = await db.query(`
-      SELECT strftime('%Y-%m', created_at) as month, SUM(final_price) as revenue
-      FROM quotes
-      WHERE status = 'Approved'
-      GROUP BY month
-      ORDER BY month ASC
-      LIMIT 12
-    `);
-    // PostgreSQL uses date_trunc or to_char instead of strftime. We provide dynamic JS formatting if SQLite vs Pg:
-    let revenueTrends = revenueTrendsRes.rows;
+    let revenueTrends = [];
     if (db.getDbType() === 'postgres') {
       const pgTrends = await db.query(`
         SELECT to_char(created_at, 'YYYY-MM') as month, SUM(final_price) as revenue
+        FROM quotes
+        WHERE status = 'Approved'
+        GROUP BY to_char(created_at, 'YYYY-MM')
+        ORDER BY month ASC
+        LIMIT 12
+      `);
+      revenueTrends = pgTrends.rows;
+    } else {
+      const sqliteTrends = await db.query(`
+        SELECT strftime('%Y-%m', created_at) as month, SUM(final_price) as revenue
         FROM quotes
         WHERE status = 'Approved'
         GROUP BY month
         ORDER BY month ASC
         LIMIT 12
       `);
-      revenueTrends = pgTrends.rows;
+      revenueTrends = sqliteTrends.rows;
     }
 
     // 3. Package Popularity
